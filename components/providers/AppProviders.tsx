@@ -6,7 +6,7 @@
 
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider, ProjectProvider } from "@/context";
+import { AuthProvider, ProjectProvider, TaskProvider } from "@/context";
 import { ToastProvider } from "@/context/ToastContext";
 
 interface AppProvidersProps {
@@ -38,7 +38,9 @@ export function AppProviders({ children }: AppProvidersProps) {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ProjectProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <TaskProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </TaskProvider>
         </ProjectProvider>
       </AuthProvider>
     </QueryClientProvider>

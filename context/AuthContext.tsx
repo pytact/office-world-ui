@@ -32,7 +32,9 @@ interface AuthContextValue {
   updateUser: (updates: Partial<AuthUser>) => void;
   // Role-based access helpers
   isCEO: boolean;
+  isManager: boolean;
   isHR: boolean;
+  isEmployee: boolean;
   isCEOOrHR: boolean;
   canAccessSalary: boolean; // F-006: Salary Management access (CEO/HR only)
 }
@@ -182,8 +184,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return user?.role?.toLowerCase() === "ceo" || false;
   }, [user?.role]);
 
+  const isManager = useMemo(() => {
+    return user?.role?.toLowerCase() === "manager" || false;
+  }, [user?.role]);
+
   const isHR = useMemo(() => {
     return user?.role?.toLowerCase() === "hr" || false;
+  }, [user?.role]);
+
+  const isEmployee = useMemo(() => {
+    return user?.role?.toLowerCase() === "employee" || false;
   }, [user?.role]);
 
   const isCEOOrHR = useMemo(() => {
@@ -206,7 +216,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     updateUser,
     isCEO,
+    isManager,
     isHR,
+    isEmployee,
     isCEOOrHR,
     canAccessSalary,
   };

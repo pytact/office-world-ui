@@ -9,3 +9,4 @@ export * from "./salary";
 export * from "./bankInfo";
 export * from "./salaryPayment";
 export * from "./project";
+export * from "./task";

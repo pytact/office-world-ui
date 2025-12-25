@@ -13,6 +13,8 @@ export { CompanyProvider, useCompanyContext } from "./CompanyContext";
 
 export { ProjectProvider, useProjectContext } from "./ProjectContext";
 
+export { TaskProvider, useTaskContext } from "./TaskContext";
+
 // Re-export useAuth hook for convenience (wraps useAuthContext)
 // Components should use useAuth() instead of useAuthContext() directly
 export { useAuth } from "@/hooks/useAuth";
