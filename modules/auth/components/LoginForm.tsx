@@ -6,6 +6,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useAuthContext } from "@/context";
+import { useToast } from "@/context/ToastContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
@@ -15,6 +16,7 @@ import type { LoginRequest } from "@/utils/types/requests/auth";
 
 export function LoginForm() {
   const { login, isLoading } = useAuthContext();
+  const { showError } = useToast();
 
   const [formData, setFormData] = useState<LoginRequest>({
     email: "",
@@ -41,16 +43,25 @@ export function LoginForm() {
   const validateForm = (): boolean => {
     const newErrors: typeof errors = {};
 
+    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        newErrors.email = "Please enter a valid email address";
+      } else if (formData.email.trim().length > 255) {
+        newErrors.email = "Email address is too long (maximum 255 characters)";
+      }
     }
 
+    // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
+    } else if (formData.password.length > 128) {
+      newErrors.password = "Password is too long (maximum 128 characters)";
     }
 
     setErrors(newErrors);
@@ -68,12 +79,7 @@ export function LoginForm() {
     setErrors({});
 
     try {
-      console.log("[LoginForm] Attempting login with:", { email: formData.email });
       await login(formData);
-      console.log("[LoginForm] Login successful");
-      // Login successful - AuthContext will update state
-      // Login page's useEffect will handle redirect to "/"
-      // No need to manually redirect here
     } catch (error: any) {
       // Enhanced error logging
       console.error("[LoginForm] Login error:", {
@@ -85,27 +91,110 @@ export function LoginForm() {
         normalizedError: error,
       });
 
-      // Handle API errors - check for normalized error structure
-      let errorMessage = "Login failed. Please check your credentials and try again.";
+      const newErrors: typeof errors = {};
 
-      if (error?.message) {
-        // Normalized error from error-normalizer
-        errorMessage = error.message;
-      } else if (error?.response?.data?.message) {
-        // Direct API error response
-        errorMessage = error.response.data.message;
-      } else if (error?.message) {
-        // Generic error
-        errorMessage = error.message;
-      }
-
-      // Check for network/CORS errors
+      // Check for network/CORS errors first
       if (error?.statusCode === 0 || error?.isNetworkError) {
-        errorMessage =
+        newErrors.general =
           "Network Error: Unable to connect to the server. Please check if the API server is running and CORS is configured correctly.";
+        setErrors(newErrors);
+        setIsSubmitting(false);
+        return;
       }
 
-      setErrors({ general: errorMessage });
+      // Handle API error codes and status codes
+      const statusCode = error?.statusCode || error?.response?.status;
+      const errorCode = error?.error?.code || error?.response?.data?.error?.code;
+      
+      // Handle field-specific errors from API (check both normalized and raw response)
+      const fieldErrors = error?.fieldErrors || 
+        (error?.response?.data?.error?.details?.reduce((acc: Record<string, string>, detail: any) => {
+          if (detail.field && detail.issue) {
+            acc[detail.field] = detail.issue;
+          }
+          return acc;
+        }, {} as Record<string, string>));
+      
+      if (fieldErrors) {
+        // Map field errors to form fields
+        if (fieldErrors.email) {
+          newErrors.email = fieldErrors.email;
+        }
+        if (fieldErrors.password) {
+          newErrors.password = fieldErrors.password;
+        }
+      }
+
+      // Map error codes to user-friendly messages
+      if (statusCode === 401) {
+        if (errorCode === "INVALID_CREDENTIALS") {
+          // For INVALID_CREDENTIALS, if we have field errors, they're already set above
+          // Only show general error if no field errors were set
+          if (!newErrors.email && !newErrors.password) {
+            newErrors.general = error?.message || "Invalid email or password. Please check your credentials and try again.";
+          }
+        } else if (errorCode === "TOKEN_EXPIRED") {
+          newErrors.general = "Your session has expired. Please log in again.";
+        } else if (errorCode === "UNAUTHENTICATED") {
+          newErrors.general = "Authentication failed. Please check your credentials.";
+        } else {
+          // Fallback for other 401 errors
+          if (!newErrors.email && !newErrors.password) {
+            newErrors.general = error?.message || "Invalid email or password. Please check your credentials and try again.";
+          }
+        }
+      } else if (statusCode === 403) {
+        if (errorCode === "ACCOUNT_INACTIVE") {
+          newErrors.general = "Your account is inactive. Please contact your administrator.";
+        } else if (errorCode === "ACCOUNT_DELETED") {
+          newErrors.general = "Your account has been deleted. Please contact support.";
+        } else if (errorCode === "COMPANY_INACTIVE") {
+          newErrors.general = "Your company account is inactive. Please contact your administrator.";
+        } else {
+          newErrors.general = "Access denied. Please contact your administrator.";
+        }
+      } else if (statusCode === 400) {
+        // Validation errors - use field errors if available, otherwise use message
+        if (errorCode === "VALIDATION_FAILED" || errorCode === "INVALID_REQUEST") {
+          if (Object.keys(newErrors).length === 0) {
+            // No field errors, show general validation message
+            newErrors.general = error?.message || "Please check your input and try again.";
+          }
+        } else {
+          newErrors.general = error?.message || "Invalid request. Please check your input and try again.";
+        }
+      } else if (statusCode === 422) {
+        // Unprocessable entity - validation errors
+        if (Object.keys(newErrors).length === 0) {
+          newErrors.general = error?.message || "Validation failed. Please check your input and try again.";
+        }
+      } else if (statusCode === 500) {
+        newErrors.general = "Server error. Please try again later or contact support if the issue persists.";
+      } else {
+        // Fallback to error message or default
+        // Only set general error if no field errors are present
+        if (!newErrors.email && !newErrors.password && !newErrors.general) {
+          newErrors.general = error?.message || "Login failed. Please check your credentials and try again.";
+        }
+      }
+
+      // Ensure at least one error is shown
+      if (Object.keys(newErrors).length === 0) {
+        newErrors.general = error?.message || "Login failed. Please check your credentials and try again.";
+      }
+
+      console.log("[LoginForm] Final errors to display:", newErrors);
+      setErrors(newErrors);
+
+      // Show error in toast notification
+      // Priority: field errors > general error
+      if (newErrors.email) {
+        showError(newErrors.email);
+      } else if (newErrors.password) {
+        showError(newErrors.password);
+      } else if (newErrors.general) {
+        showError(newErrors.general);
+      }
     } finally {
       setIsSubmitting(false);
     }

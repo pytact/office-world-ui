@@ -12,6 +12,7 @@ import { colors, spacing, typography, shadows, borderRadius } from "@/theme/toke
 import { userRoutes } from "@/utils/routes/user.routes";
 import { companyRoutes } from "@/utils/routes/company.routes";
 import { employeeRoutes } from "@/utils/routes/employee.routes";
+import { salaryRoutes } from "@/utils/routes/salary.routes";
 import { notificationRoutes } from "@/utils/routes/notification.routes";
 
 interface NavItem {
@@ -45,10 +46,10 @@ export function Sidebar() {
       );
 
       // CEO and HR can see all company features
-      // Show "Users" only (not "Employees" - they are the same)
+      // Show "Employees" (not "Users")
       if (["ceo", "hr"].includes(userRole)) {
         items.push(
-          { label: "Users", href: userRoutes.company.list, roles: ["ceo", "hr"] },
+          { label: "Employees", href: employeeRoutes.company.list, roles: ["ceo", "hr"] },
           { label: "Company Profile", href: companyRoutes.profile.view, roles: ["ceo", "hr"] }
         );
       }

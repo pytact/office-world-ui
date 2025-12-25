@@ -13,9 +13,10 @@ import { Button } from "@/components/ui/Button";
 import { Loader } from "@/components/ui";
 import { colors, spacing, typography, borderRadius, shadows } from "@/theme/tokens";
 import { employeeRoutes, companyRoutes } from "@/utils/routes";
+import { salaryRoutes } from "@/utils/routes/salary.routes";
 
 export function CompanyDashboardContainer() {
-  const { user } = useAuthContext();
+  const { user, canAccessSalary } = useAuthContext();
   const router = useRouter();
 
   const currentUserRole = user?.role?.toLowerCase() || "";
@@ -177,6 +178,15 @@ export function CompanyDashboardContainer() {
                   type="button"
                 >
                   Create Employee
+                </Button>
+              )}
+              {canAccessSalary && (
+                <Button
+                  onClick={() => router.push(employeeRoutes.company.list)}
+                  type="button"
+                  variant="primary"
+                >
+                  Manage Salaries
                 </Button>
               )}
               <Button

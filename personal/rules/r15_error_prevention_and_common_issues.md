@@ -326,6 +326,119 @@ Access to XMLHttpRequest has been blocked by CORS policy
 
 ---
 
+### Issue 12 — React Hooks Order Violation (Rendered More Hooks Error)
+
+**Cause:** Hooks are called conditionally or after early returns, violating React's Rules of Hooks. React requires hooks to be called in the same order on every render.
+
+**Common Scenarios:**
+* Early returns (`if (loading) return <Loader />`) before hooks are called
+* Hooks called inside conditional statements (`if (condition) { useCallback(...) }`)
+* Hooks called inside loops
+* Hooks called after conditional logic that changes between renders
+
+**Error Message:**
+```
+Error: Rendered more hooks than during the previous render.
+Error: React has detected a change in the order of Hooks called by ComponentName
+```
+
+**Prevention:**
+
+* **ALWAYS call ALL hooks at the top of the component, BEFORE any conditional returns:**
+  ```tsx
+  // ❌ WRONG - Hooks after early returns
+  export function MyComponent() {
+    const data = useQuery();
+    
+    if (data.isLoading) return <Loader />; // Early return
+    
+    const handleClick = useCallback(() => { // ❌ Hook called conditionally
+      // ...
+    }, []);
+    
+    return <div>...</div>;
+  }
+  
+  // ✅ CORRECT - All hooks before early returns
+  export function MyComponent() {
+    const data = useQuery();
+    const handleClick = useCallback(() => { // ✅ Hook always called
+      // ...
+    }, []);
+    
+    if (data.isLoading) return <Loader />; // Early return AFTER hooks
+    
+    return <div>...</div>;
+  }
+  ```
+
+* **Never call hooks conditionally:**
+  ```tsx
+  // ❌ WRONG
+  if (condition) {
+    const value = useState(0); // Never do this
+  }
+  
+  // ✅ CORRECT
+  const value = useState(0); // Always call hooks unconditionally
+  if (condition) {
+    // Use value here
+  }
+  ```
+
+* **Never call hooks in loops:**
+  ```tsx
+  // ❌ WRONG
+  items.map(item => {
+    const [state, setState] = useState(0); // Never do this
+    return <div>...</div>;
+  });
+  
+  // ✅ CORRECT
+  const [states, setStates] = useState({});
+  return items.map(item => {
+    return <div>...</div>;
+  });
+  ```
+
+* **Component Structure Pattern:**
+  ```tsx
+  export function ContainerComponent() {
+    // 1. ALL hooks at the top (unconditional)
+    const params = useParams();
+    const router = useRouter();
+    const data = useQuery();
+    const mutation = useMutation();
+    const handleAction = useCallback(() => {}, []);
+    
+    // 2. Derived values (useMemo)
+    const computed = useMemo(() => {}, []);
+    
+    // 3. Early returns AFTER all hooks
+    if (data.isLoading) return <Loader />;
+    if (data.isError) return <ErrorState />;
+    if (!data.data) return null;
+    
+    // 4. Render logic
+    return <UIComponent />;
+  }
+  ```
+
+**Debugging Steps:**
+1. Check if any hooks are called after early returns (`if (...) return ...`)
+2. Verify all hooks are called unconditionally (not inside `if` statements)
+3. Ensure hooks are not called inside loops or nested functions
+4. Check that hook order is consistent across all code paths
+5. Use ESLint rule `react-hooks/rules-of-hooks` to catch violations
+
+**Common Solutions:**
+* **Move all hooks to top:** Place ALL hook calls at the very beginning of the component
+* **Remove conditional hook calls:** Never call hooks inside `if` statements or loops
+* **Restructure component:** If hooks need to be conditional, restructure the component logic
+* **Use ESLint:** Enable `react-hooks/rules-of-hooks` ESLint rule to catch violations automatically
+
+---
+
 ## Error Prevention Rules (Mandatory)
 
 ### Rule 1 — No silent failures
@@ -416,6 +529,7 @@ Max 250 lines per file.
 * [ ] All UI states handled
 * [ ] No infinite loops or re-renders
 * [ ] Proper routing structure
+* [ ] All hooks called before early returns (no conditional hook calls)
 
 ### Architecture
 

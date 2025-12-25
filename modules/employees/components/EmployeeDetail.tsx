@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Button, Card, Badge } from "@/components/ui";
 import { EmployeeSummaryCard } from "./EmployeeSummaryCard";
 import { employeeRoutes } from "@/utils/routes/employee.routes";
+import { salaryRoutes } from "@/utils/routes/salary.routes";
 import { spacing, typography, colors } from "@/theme/tokens";
 import type { TransformedEmployeeDetail } from "@/hooks/useEmployeeTransformations";
 
@@ -19,10 +20,13 @@ interface EmployeeDetailProps {
   canDeactivate: boolean;
   canSoftDelete: boolean;
   isActive: boolean;
+  canAccessSalary?: boolean; // F-006: Salary Management access (CEO/HR only)
+  hasActiveSalary?: boolean; // F-006: Whether employee has active salary configured
   onEdit?: () => void;
   onDeactivate?: () => void;
   onReactivate?: () => void;
   onDelete?: () => void;
+  onViewSalary?: () => void; // F-006: Navigate to salary management
   isDeactivating?: boolean;
   isDeleting?: boolean;
 }
@@ -33,10 +37,13 @@ export const EmployeeDetail = React.memo(function EmployeeDetail({
   canDeactivate,
   canSoftDelete,
   isActive,
+  canAccessSalary = false,
+  hasActiveSalary = false,
   onEdit,
   onDeactivate,
   onReactivate,
   onDelete,
+  onViewSalary,
   isDeactivating = false,
   isDeleting = false,
 }: EmployeeDetailProps) {
@@ -342,6 +349,36 @@ export const EmployeeDetail = React.memo(function EmployeeDetail({
           </div>
         </Card>
       </div>
+
+      {/* Salary Management Section (CEO/HR only) */}
+      {canAccessSalary && (
+        <div style={sectionStyle}>
+          <Card padding="lg" variant="default">
+            <h2 style={sectionTitleStyle}>Salary Management</h2>
+            <p style={useMemo(() => ({
+              fontSize: typography.fontSize.body,
+              fontFamily: typography.fontFamily,
+              fontWeight: typography.fontWeight.medium,
+              color: colors.textPrimary,
+              lineHeight: typography.lineHeight.body,
+              marginBottom: spacing[4],
+            } as const), [])}>
+              {hasActiveSalary
+                ? "Manage employee salary, payment history, and bank information."
+                : "Create salary configuration for this employee to begin managing compensation."}
+            </p>
+            {onViewSalary && (
+              <Button
+                type="button"
+                onClick={onViewSalary}
+                variant="primary"
+              >
+                {hasActiveSalary ? "View Salary Details" : "Create Salary"}
+              </Button>
+            )}
+          </Card>
+        </div>
+      )}
 
       {/* Lifecycle Actions */}
       {(canEdit || canDeactivate || canSoftDelete) && (

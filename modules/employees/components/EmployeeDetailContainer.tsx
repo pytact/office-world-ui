@@ -9,6 +9,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEmployeeDetail } from "@/hooks/useEmployeeDetail";
 import { useUpdateEmployee, useDeleteEmployee } from "@/hooks/useEmployees";
 import { useEmployeePermissions } from "@/hooks/useEmployeePermissions";
+import { useSalaryDetail } from "@/hooks/useSalaryDetail";
+import { useAuthContext } from "@/context";
 import { EmployeeDetail } from "./EmployeeDetail";
 import { EmployeeDeactivateConfirmationModal } from "./EmployeeDeactivateConfirmationModal";
 import { EmployeeDeleteConfirmationModal } from "./EmployeeDeleteConfirmationModal";
@@ -17,12 +19,14 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { AccessDenied } from "@/components/ui/AccessDenied";
 import { useToast } from "@/context/ToastContext";
 import { employeeRoutes } from "@/utils/routes/employee.routes";
+import { salaryRoutes } from "@/utils/routes/salary.routes";
 import { NormalizedError } from "@/core/http/normalizers/error-normalizer";
 
 export function EmployeeDetailContainer() {
   const params = useParams();
   const router = useRouter();
   const { showSuccess, showError } = useToast();
+  const { canAccessSalary } = useAuthContext();
   const employeeId = params?.id as string;
 
   const { canViewEmployeeDetail, canUpdateEmployee } = useEmployeePermissions();
@@ -37,6 +41,9 @@ export function EmployeeDetailContainer() {
     canSoftDelete,
     isActive,
   } = useEmployeeDetail(employeeId);
+
+  // Check if employee has active salary (for CEO/HR only)
+  const salaryDetail = useSalaryDetail(canAccessSalary ? employeeId : null);
 
   // Combine API permissions with client-side permissions
   // CEO and HR should always be able to edit based on client-side permissions
@@ -65,27 +72,7 @@ export function EmployeeDetailContainer() {
     setIsDeleteModalOpen(false);
   }, []);
 
-  // Permission check
-  if (!canViewEmployeeDetail) {
-    return <AccessDenied message="You do not have permission to view employee details." />;
-  }
-
-  // Loading state
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  // Error state
-  if (isError || !employee) {
-    return (
-      <ErrorState
-        message={error?.message || "Failed to load employee details"}
-        onRetry={refetch}
-      />
-    );
-  }
-
-  // Handle deactivate
+  // Handle deactivate - MUST be called before early returns
   const handleDeactivate = useCallback(async () => {
     try {
       if (!employee) return;
@@ -106,7 +93,7 @@ export function EmployeeDetailContainer() {
     }
   }, [employee, updateMutation, showSuccess, showError, refetch]);
 
-  // Handle reactivate
+  // Handle reactivate - MUST be called before early returns
   const handleReactivate = useCallback(async () => {
     try {
       if (!employee) return;
@@ -126,7 +113,7 @@ export function EmployeeDetailContainer() {
     }
   }, [employee, updateMutation, showSuccess, showError, refetch]);
 
-  // Handle delete
+  // Handle delete - MUST be called before early returns
   const handleDelete = useCallback(async () => {
     try {
       if (!employee) return;
@@ -146,12 +133,40 @@ export function EmployeeDetailContainer() {
     }
   }, [employee, deleteMutation, showSuccess, showError, router]);
 
-  // Handle edit (navigate to edit page)
+  // Handle edit (navigate to edit page) - MUST be called before early returns
   const handleEdit = useCallback(() => {
     if (employee) {
       router.push(employeeRoutes.company.edit(employee.employee_id));
     }
   }, [employee, router]);
+
+  // Handle view salary (navigate to salary management) - MUST be called before early returns
+  const handleViewSalary = useCallback(() => {
+    if (employee && canAccessSalary) {
+      router.push(salaryRoutes.company.overview(employee.employee_id));
+    }
+  }, [employee, canAccessSalary, router]);
+
+
+  // Permission check
+  if (!canViewEmployeeDetail) {
+    return <AccessDenied message="You do not have permission to view employee details." />;
+  }
+
+  // Loading state
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  // Error state
+  if (isError || !employee) {
+    return (
+      <ErrorState
+        message={error?.message || "Failed to load employee details"}
+        onRetry={refetch}
+      />
+    );
+  }
 
   return (
     <>
@@ -161,6 +176,8 @@ export function EmployeeDetailContainer() {
         canDeactivate={canDeactivate}
         canSoftDelete={canSoftDelete}
         isActive={isActive}
+        canAccessSalary={canAccessSalary}
+        hasActiveSalary={canAccessSalary ? salaryDetail.hasActiveSalary : false}
         onEdit={canEdit ? handleEdit : undefined}
         onDeactivate={
           canDeactivate && isActive ? handleOpenDeactivateModal : undefined
@@ -169,6 +186,7 @@ export function EmployeeDetailContainer() {
           canDeactivate && !isActive ? handleReactivate : undefined
         }
         onDelete={canSoftDelete ? handleOpenDeleteModal : undefined}
+        onViewSalary={canAccessSalary ? handleViewSalary : undefined}
         isDeactivating={updateMutation.isPending}
         isDeleting={deleteMutation.isPending}
       />

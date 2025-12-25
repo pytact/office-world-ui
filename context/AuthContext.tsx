@@ -4,7 +4,7 @@
 
 "use client";
 
-import React, { createContext, useContext, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useCallback, useEffect, useMemo } from "react";
 import { useLogin, useLogout } from "@/hooks/useAuth";
 import { LoginRequest } from "@/utils/types/requests/auth";
 import { LoginResponse } from "@/utils/types/responses/auth";
@@ -30,6 +30,11 @@ interface AuthContextValue {
   login: (payload: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<AuthUser>) => void;
+  // Role-based access helpers
+  isCEO: boolean;
+  isHR: boolean;
+  isCEOOrHR: boolean;
+  canAccessSalary: boolean; // F-006: Salary Management access (CEO/HR only)
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -172,6 +177,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = !!token && !!user;
   const isSuperAdmin = user?.is_super_admin ?? false;
 
+  // Role-based access helpers
+  const isCEO = useMemo(() => {
+    return user?.role?.toLowerCase() === "ceo" || false;
+  }, [user?.role]);
+
+  const isHR = useMemo(() => {
+    return user?.role?.toLowerCase() === "hr" || false;
+  }, [user?.role]);
+
+  const isCEOOrHR = useMemo(() => {
+    return isCEO || isHR || isSuperAdmin; // SuperAdmin also has access
+  }, [isCEO, isHR, isSuperAdmin]);
+
+  // F-006: Salary Management access control
+  // Only CEO and HR can access salary data (SuperAdmin also has access)
+  const canAccessSalary = useMemo(() => {
+    return isCEOOrHR;
+  }, [isCEOOrHR]);
+
   const value: AuthContextValue = {
     user,
     token,
@@ -181,6 +205,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     updateUser,
+    isCEO,
+    isHR,
+    isCEOOrHR,
+    canAccessSalary,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

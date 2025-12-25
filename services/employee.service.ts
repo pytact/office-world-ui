@@ -18,7 +18,7 @@ import {
   EmployeeMutationResponse,
 } from "@/utils/types/responses/employee";
 
-const basePath = "/api/v1";
+const basePath = "/v1";
 
 export const EmployeeService = {
   /**

@@ -5,3 +5,6 @@ export * from "./company";
 export * from "./user";
 export * from "./permission";
 export * from "./notification";
+export * from "./salary";
+export * from "./bankInfo";
+export * from "./salaryPayment";
