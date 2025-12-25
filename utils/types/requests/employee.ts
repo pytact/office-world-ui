@@ -99,13 +99,6 @@ export interface EmployeeBase {
   is_active?: boolean | null;
 }
 
-// Create Interface
-export interface EmployeeCreate extends EmployeeBase {
-  user_id: string; // UUID
-  joining_date: string; // ISO 8601 date format (YYYY-MM-DD), required, not future date
-  employment_status: EmploymentStatus; // Required
-}
-
 // Update Interface (all fields optional for partial update)
 export interface EmployeeUpdate {
   employment_status?: EmploymentStatus | null;

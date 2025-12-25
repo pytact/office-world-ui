@@ -71,13 +71,13 @@ export const AuthService = {
   },
 
   /**
-   * GET /api/v1/auth/activation/{token}
+   * GET /api/v1/auth/invitation/{token}
    * Validate invitation token
    */
   validateActivationToken: async (token: string): Promise<ActivationValidationResponse> => {
     try {
       const response = await http.get<ActivationValidationResponse>(
-        `${basePath}/activation/${token}`
+        `${basePath}/invitations/${token}`
       );
       return response.data;
     } catch (error) {

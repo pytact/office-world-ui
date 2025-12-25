@@ -6,3 +6,4 @@ export * from "./permission.routes";
 export * from "./notification.routes";
 export * from "./company.routes";
 export * from "./employee.routes";
+export * from "./project.routes";

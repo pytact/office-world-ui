@@ -10,7 +10,6 @@ export const employeeRoutes = {
   // Company routes (CEO, HR, Manager, Employee)
   company: {
     list: "/company/employees",
-    create: "/company/employees/create",
     detail: (employeeId: string) => `/company/employees/${employeeId}`,
     edit: (employeeId: string) => `/company/employees/${employeeId}/edit`,
   },

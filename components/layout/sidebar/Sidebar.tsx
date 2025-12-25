@@ -14,6 +14,7 @@ import { companyRoutes } from "@/utils/routes/company.routes";
 import { employeeRoutes } from "@/utils/routes/employee.routes";
 import { salaryRoutes } from "@/utils/routes/salary.routes";
 import { notificationRoutes } from "@/utils/routes/notification.routes";
+import { projectRoutes } from "@/utils/routes/project.routes";
 
 interface NavItem {
   label: string;
@@ -43,6 +44,11 @@ export function Sidebar() {
       
       items.push(
         { label: "Dashboard", href: "/company/dashboard", roles: ["ceo", "hr", "manager", "employee"] }
+      );
+
+      // All company users can see Projects (visibility differs by role)
+      items.push(
+        { label: "Projects", href: projectRoutes.company.list, roles: ["ceo", "hr", "manager", "employee"] }
       );
 
       // CEO and HR can see all company features

@@ -7,7 +7,6 @@ import { normalizeAPIError } from "@/core/http/normalizers/error-normalizer";
 import { buildIfMatchHeaders } from "@/utils/helpers/etag";
 
 import {
-  EmployeeCreate,
   EmployeeUpdate,
   EmployeeListParams,
 } from "@/utils/types/requests/employee";
@@ -73,25 +72,6 @@ export const EmployeeService = {
     try {
       const r = await http.get<EmployeeDetailResponse>(
         `${basePath}/company/employees/${employee_id}`
-      );
-      return r.data;
-    } catch (error) {
-      throw normalizeAPIError(error);
-    }
-  },
-
-  /**
-   * POST /api/v1/company/employees
-   * Create a new employee from existing User
-   * Access: CEO, HR only (Manager, Employee, SuperAdmin return 403)
-   */
-  create: async (
-    payload: EmployeeCreate
-  ): Promise<EmployeeMutationResponse> => {
-    try {
-      const r = await http.post<EmployeeMutationResponse>(
-        `${basePath}/company/employees`,
-        payload
       );
       return r.data;
     } catch (error) {

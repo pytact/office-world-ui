@@ -11,6 +11,7 @@ import { EmployeeTable } from "./EmployeeTable";
 import { EmployeeFilters } from "./EmployeeFilters";
 import { EmployeePagination } from "./EmployeePagination";
 import { employeeRoutes } from "@/utils/routes/employee.routes";
+import { userRoutes } from "@/utils/routes/user.routes";
 import { spacing, typography, colors } from "@/theme/tokens";
 import type { TransformedEmployeeSummary } from "@/hooks/useEmployeeTransformations";
 import type { useEmployeeFilters } from "@/hooks/useEmployeeFilters";
@@ -93,8 +94,8 @@ export const EmployeeList = React.memo(function EmployeeList({
       <div style={headerStyle}>
         <h1 style={headingStyle}>Employees</h1>
         {canCreateEmployee && (
-          <Link href={employeeRoutes.company.create}>
-            <Button type="button">Create Employee</Button>
+          <Link href={userRoutes.company.invite}>
+            <Button type="button">Invite Employee</Button>
           </Link>
         )}
       </div>

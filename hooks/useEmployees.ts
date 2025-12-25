@@ -11,7 +11,6 @@ import {
 } from "@tanstack/react-query";
 import { EmployeeService } from "@/services/employee.service";
 import {
-  EmployeeCreate,
   EmployeeUpdate,
   EmployeeListParams,
 } from "@/utils/types/requests/employee";
@@ -73,30 +72,6 @@ export function useGetEmployee(employee_id: string | null) {
     staleTime: 5 * 60 * 1000, // 5 minutes - employee details are relatively stable
     gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: true, // Refetch when window regains focus for fresh data
-  });
-}
-
-/**
- * Hook for creating a new employee
- * POST /api/v1/company/employees
- * Access: CEO, HR only (Manager, Employee, SuperAdmin return 403)
- * @returns Mutation object with create function and state
- */
-export function useCreateEmployee() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: EmployeeCreate) => EmployeeService.create(payload),
-    onSuccess: async (data) => {
-      // Invalidate employee list
-      await queryClient.invalidateQueries({ queryKey: ["employees"] });
-      // Invalidate specific employee if we have the ID
-      if (data?.data?.employee_id) {
-        await queryClient.invalidateQueries({
-          queryKey: ["employee", data.data.employee_id],
-        });
-      }
-    },
   });
 }
 

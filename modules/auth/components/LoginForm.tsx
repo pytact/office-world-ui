@@ -5,6 +5,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { useAuthContext } from "@/context";
 import { useToast } from "@/context/ToastContext";
 import { Button } from "@/components/ui/Button";
@@ -277,6 +278,21 @@ export function LoginForm() {
     []
   );
 
+  const forgotPasswordLinkStyle = useMemo(
+    () => ({
+      display: "block",
+      textAlign: "center" as const,
+      marginTop: spacing[6],
+      color: colors.primary,
+      textDecoration: "none",
+      fontSize: typography.fontSize.small,
+      fontFamily: typography.fontFamily,
+      fontWeight: typography.fontWeight.medium,
+      transition: "opacity 0.2s ease",
+    } as const),
+    []
+  );
+
   return (
     <Card padding="lg" variant="elevated">
       <form onSubmit={handleSubmit} style={formStyle}>
@@ -337,6 +353,22 @@ export function LoginForm() {
         >
           Sign In
         </Button>
+
+        {/* TERTIARY: Forgot Password Link (Secondary Action) */}
+        <div style={{ textAlign: "center" as const, marginTop: spacing[6] }}>
+          <Link
+            href="/password-reset"
+            style={forgotPasswordLinkStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.8";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+            }}
+          >
+            Forgot your password?
+          </Link>
+        </div>
       </form>
     </Card>
   );

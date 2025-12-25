@@ -12,8 +12,9 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Loader } from "@/components/ui";
 import { colors, spacing, typography, borderRadius, shadows } from "@/theme/tokens";
-import { employeeRoutes, companyRoutes } from "@/utils/routes";
+import { employeeRoutes, companyRoutes, userRoutes } from "@/utils/routes";
 import { salaryRoutes } from "@/utils/routes/salary.routes";
+import { projectRoutes } from "@/utils/routes/project.routes";
 
 export function CompanyDashboardContainer() {
   const { user, canAccessSalary } = useAuthContext();
@@ -167,6 +168,22 @@ export function CompanyDashboardContainer() {
             <h2 style={sectionTitleStyle}>Quick Actions</h2>
             <div style={actionsGridStyle}>
               <Button
+                onClick={() => router.push(projectRoutes.company.list)}
+                type="button"
+                variant="primary"
+              >
+                View Projects
+              </Button>
+              {(isCEO || isManager) && (
+                <Button
+                  onClick={() => router.push(projectRoutes.company.create)}
+                  type="button"
+                  variant="primary"
+                >
+                  Create Project
+                </Button>
+              )}
+              <Button
                 onClick={() => router.push(employeeRoutes.company.list)}
                 type="button"
               >
@@ -174,10 +191,11 @@ export function CompanyDashboardContainer() {
               </Button>
               {(isCEO || isHR) && (
                 <Button
-                  onClick={() => router.push(employeeRoutes.company.create)}
+                  onClick={() => router.push(userRoutes.company.invite)}
                   type="button"
+                  variant="primary"
                 >
-                  Create Employee
+                  Invite Employee
                 </Button>
               )}
               {canAccessSalary && (
@@ -209,20 +227,58 @@ export function CompanyDashboardContainer() {
 
       {/* Manager Dashboard */}
       {isManager && (
-        <Card variant="elevated" padding="lg">
-          <p style={subtitleStyle}>
-            Manager dashboard content will be implemented here.
-          </p>
-        </Card>
+        <>
+          <div style={quickActionsStyle}>
+            <h2 style={sectionTitleStyle}>Quick Actions</h2>
+            <div style={actionsGridStyle}>
+              <Button
+                onClick={() => router.push(projectRoutes.company.list)}
+                type="button"
+                variant="primary"
+              >
+                View Projects
+              </Button>
+              <Button
+                onClick={() => router.push(projectRoutes.company.create)}
+                type="button"
+                variant="primary"
+              >
+                Create Project
+              </Button>
+              <Button
+                onClick={() => router.push(employeeRoutes.company.list)}
+                type="button"
+              >
+                View Employees
+              </Button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Employee Dashboard */}
       {isEmployee && (
-        <Card variant="elevated" padding="lg">
-          <p style={subtitleStyle}>
-            Employee dashboard content will be implemented here.
-          </p>
-        </Card>
+        <>
+          <div style={quickActionsStyle}>
+            <h2 style={sectionTitleStyle}>Quick Actions</h2>
+            <div style={actionsGridStyle}>
+              <Button
+                onClick={() => router.push(projectRoutes.company.list)}
+                type="button"
+                variant="primary"
+              >
+                View Projects
+              </Button>
+              <Button
+                onClick={() => router.push("/company/user-profile")}
+                type="button"
+                variant="secondary"
+              >
+                My Profile
+              </Button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

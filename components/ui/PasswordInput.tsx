@@ -12,13 +12,17 @@ interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
   errorMessage?: string;
 }
 
-export function PasswordInput({
-  error = false,
-  errorMessage,
-  className = "",
-  ...props
-}: PasswordInputProps) {
-  const [showPassword, setShowPassword] = useState(false);
+export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
+  function PasswordInput(
+    {
+      error = false,
+      errorMessage,
+      className = "",
+      ...props
+    },
+    ref
+  ) {
+    const [showPassword, setShowPassword] = useState(false);
 
   const containerStyle = useMemo(
     () => ({
@@ -81,6 +85,7 @@ export function PasswordInput({
     <div className="w-full">
       <div style={containerStyle}>
         <input
+          ref={ref}
           {...props}
           type={showPassword ? "text" : "password"}
           className={className}
@@ -150,5 +155,6 @@ export function PasswordInput({
       )}
     </div>
   );
-}
+  }
+);
 

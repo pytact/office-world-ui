@@ -11,6 +11,8 @@ export { NotificationProvider, useNotificationContext } from "./NotificationCont
 
 export { CompanyProvider, useCompanyContext } from "./CompanyContext";
 
+export { ProjectProvider, useProjectContext } from "./ProjectContext";
+
 // Re-export useAuth hook for convenience (wraps useAuthContext)
 // Components should use useAuth() instead of useAuthContext() directly
 export { useAuth } from "@/hooks/useAuth";
