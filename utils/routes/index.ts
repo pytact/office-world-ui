@@ -10,3 +10,4 @@ export * from "./project.routes";
 export * from "./task.routes";
 export * from "./leave.routes";
 export * from "./attendance.routes";
+export * from "./auditLog.routes";

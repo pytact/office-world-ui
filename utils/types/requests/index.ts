@@ -11,3 +11,4 @@ export * from "./salaryPayment";
 export * from "./project";
 export * from "./task";
 export * from "./leave";
+export * from "./auditLog";

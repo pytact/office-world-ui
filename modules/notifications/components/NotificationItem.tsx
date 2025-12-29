@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { TransformedNotification } from "@/hooks/useNotificationTransformations";
+import { extractETagFromUpdatedAt } from "@/utils/helpers/etag";
 import { colors, spacing, typography } from "@/theme/tokens";
 
 interface NotificationItemProps {
@@ -26,8 +27,10 @@ export const NotificationItem = React.memo(function NotificationItem({
   const router = useRouter();
 
   const handleMarkAsRead = useCallback(() => {
-    onMarkAsRead(notification.id);
-  }, [notification.id, onMarkAsRead]);
+    // Extract ETag from notification's updated_at field (required by API)
+    const etag = extractETagFromUpdatedAt(notification);
+    onMarkAsRead(notification.id, etag || undefined);
+  }, [notification, onMarkAsRead]);
 
   const handleNavigate = useCallback(() => {
     if (notification.related_record_url) {

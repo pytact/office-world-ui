@@ -37,6 +37,7 @@ interface AuthContextValue {
   isEmployee: boolean;
   isCEOOrHR: boolean;
   canAccessSalary: boolean; // F-006: Salary Management access (CEO/HR only)
+  canAccessAuditLogs: boolean; // F-011: Audit Logging access (CEO/HR/Manager only, Employee/SuperAdmin blocked)
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -186,6 +187,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return isCEOOrHR;
   }, [isCEOOrHR]);
 
+  // F-011: Audit Logging access control
+  // CEO, HR, and Manager can access audit logs
+  // Employee and SuperAdmin are blocked (out of scope)
+  const canAccessAuditLogs = useMemo(() => {
+    return !isSuperAdmin && (isCEO || isHR || isManager);
+  }, [isSuperAdmin, isCEO, isHR, isManager]);
+
   const value: AuthContextValue = {
     user,
     token,
@@ -201,6 +209,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isEmployee,
     isCEOOrHR,
     canAccessSalary,
+    canAccessAuditLogs,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

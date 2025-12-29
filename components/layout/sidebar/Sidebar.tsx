@@ -18,6 +18,7 @@ import { projectRoutes } from "@/utils/routes/project.routes";
 import { taskRoutes } from "@/utils/routes/task.routes";
 import { leaveRoutes } from "@/utils/routes/leave.routes";
 import { attendanceRoutes } from "@/utils/routes/attendance.routes";
+import { auditLogRoutes } from "@/utils/routes/auditLog.routes";
 
 interface NavItem {
   label: string;
@@ -80,6 +81,13 @@ export function Sidebar() {
       if (["ceo", "hr", "manager"].includes(userRole)) {
         items.push(
           { label: "Pending Approvals", href: leaveRoutes.company.approvals, roles: ["ceo", "hr", "manager"] }
+        );
+      }
+
+      // CEO, HR, and Manager can see Audit Logs (with role-based visibility)
+      if (["ceo", "hr", "manager"].includes(userRole)) {
+        items.push(
+          { label: "Audit Logs", href: auditLogRoutes.company.list, roles: ["ceo", "hr", "manager"] }
         );
       }
 
