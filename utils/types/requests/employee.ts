@@ -131,6 +131,7 @@ export interface EmployeeListParams {
   search?: string | null; // Search by user name or email (case-insensitive partial match)
   department?: Department | null; // Filter by department (exact match)
   employment_status?: EmploymentStatus | null; // Filter by employment status (exact match)
+  role_code?: string | null; // Filter by role code (e.g., "manager", "hr")
   sort_by?: EmployeeSortBy; // Default: "created_at"
   sort_order?: SortOrder; // Default: "desc"
 }

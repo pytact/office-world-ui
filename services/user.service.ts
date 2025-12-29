@@ -132,28 +132,9 @@ export const UserService = {
    */
   getById: async (user_id: string): Promise<UserDetailResponse> => {
     try {
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[UserService] Fetching user by ID:", user_id);
-        console.log("[UserService] API URL:", `${basePath}/users/${user_id}`);
-      }
-
       const r = await http.get<UserDetailResponse>(`${basePath}/users/${user_id}`);
-      
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[UserService] User response received:", {
-          status: r.status,
-          data: r.data,
-        });
-      }
-
       return r.data;
     } catch (error) {
-      // Enhanced error logging
-      if (process.env.NODE_ENV === "development") {
-        console.error("[UserService] Error fetching user:", error);
-      }
       throw normalizeAPIError(error);
     }
   },
@@ -166,16 +147,12 @@ export const UserService = {
     payload: UserInviteCreate
   ): Promise<UserInviteMutationResponse> => {
     try {
-      console.log("[UserService] create called with payload:", payload);
-      console.log("[UserService] Making POST request to:", `${basePath}/users/invite`);
       const r = await http.post<UserInviteMutationResponse>(
         `${basePath}/users/invite`,
         payload
       );
-      console.log("[UserService] API response:", r);
       return r.data;
     } catch (error) {
-      console.error("[UserService] API error:", error);
       throw normalizeAPIError(error);
     }
   },

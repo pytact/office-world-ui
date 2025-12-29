@@ -18,6 +18,7 @@ import {
   ActivationResponse,
   RequestPasswordResetResponse,
   SubmitPasswordResetResponse,
+  MeResponse,
 } from "@/utils/types/responses/auth";
 
 const basePath = "/v1/auth";
@@ -31,28 +32,13 @@ export const AuthService = {
     try {
       const response = await http.post<LoginResponse>(`${basePath}/login`, payload);
       
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[AuthService] Login response received:", {
-          status: response.status,
-          statusText: response.statusText,
-          headers: response.headers,
-          data: response.data,
-        });
-      }
-      
       // Verify response structure
       if (!response.data) {
-        console.error("[AuthService] Invalid response: missing data", response);
         throw new Error("Invalid response format: missing data field");
       }
       
       return response.data;
     } catch (error) {
-      // Enhanced error logging
-      if (process.env.NODE_ENV === "development") {
-        console.error("[AuthService] Login error:", error);
-      }
       throw normalizeAPIError(error);
     }
   },
@@ -135,6 +121,19 @@ export const AuthService = {
         `${basePath}/password-reset/${token}`,
         payload
       );
+      return response.data;
+    } catch (error) {
+      throw normalizeAPIError(error);
+    }
+  },
+
+  /**
+   * GET /api/v1/auth/me
+   * Get current authenticated user's profile information, permissions, and context
+   */
+  getMe: async (): Promise<MeResponse> => {
+    try {
+      const response = await http.get<MeResponse>(`${basePath}/me`);
       return response.data;
     } catch (error) {
       throw normalizeAPIError(error);

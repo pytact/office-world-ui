@@ -42,11 +42,7 @@ export function useGetSalaryPayments(
     ],
     queryFn: () => {
       if (!employee_id) {
-        const error = new Error("Employee ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetSalaryPayments] Employee ID is missing");
-        }
-        throw error;
+        throw new Error("Employee ID is required");
       }
       return SalaryPaymentService.list(employee_id, params);
     },

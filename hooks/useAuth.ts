@@ -99,9 +99,24 @@ export function useSubmitPasswordReset() {
   });
 }
 
-// ============================================
+/**
+ * Hook for getting current authenticated user's profile
+ * GET /api/v1/auth/me
+ * @returns Query object with current user data and state
+ */
+export function useGetMe() {
+  return useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: () => AuthService.getMe(),
+    staleTime: 5 * 60 * 1000, // 5 minutes - user profile is relatively stable
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: true, // Refetch when window regains focus for fresh data
+  });
+}
+
+
 // Context Wrapper Hook (R7 Compliance)
-// ============================================
+
 
 /**
  * Custom hook to consume Auth Context

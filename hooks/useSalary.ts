@@ -27,11 +27,7 @@ export function useGetActiveSalary(employee_id: string | null) {
     queryKey: ["salary", "active", employee_id],
     queryFn: async () => {
       if (!employee_id) {
-        const error = new Error("Employee ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetActiveSalary] Employee ID is missing");
-        }
-        throw error;
+        throw new Error("Employee ID is required");
       }
       
       try {
@@ -75,11 +71,7 @@ export function useGetSalaryHistory(employee_id: string | null) {
     queryKey: ["salary", "history", employee_id],
     queryFn: () => {
       if (!employee_id) {
-        const error = new Error("Employee ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetSalaryHistory] Employee ID is missing");
-        }
-        throw error;
+        throw new Error("Employee ID is required");
       }
       return SalaryService.getHistory(employee_id);
     },

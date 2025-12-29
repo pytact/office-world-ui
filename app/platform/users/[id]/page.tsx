@@ -11,11 +11,6 @@ import { RouteGuard } from "@/core/guards/RouteGuard";
 import { UserDetailContainer } from "@/modules/users/components/UserDetailContainer";
 
 export default function PlatformUserDetailPage() {
-  // Debug logging in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("[PlatformUserDetailPage] Rendering user detail page");
-  }
-
   return (
     <RouteGuard allowedRoles={["superadmin"]}>
       <UserDetailContainer />

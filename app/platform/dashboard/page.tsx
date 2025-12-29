@@ -23,11 +23,6 @@ const PlatformDashboardContainer = dynamic(
 );
 
 export default function PlatformDashboardPage() {
-  // Debug logging in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("[PlatformDashboardPage] Rendering platform dashboard");
-  }
-  
   return (
     <RouteGuard allowedRoles={["superadmin"]}>
       <PlatformDashboardContainer />

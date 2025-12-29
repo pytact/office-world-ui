@@ -229,18 +229,6 @@ export function useMappedUserDetail(
 export function useMappedUser(userId: string | null) {
   const query = useGetUser(userId);
   
-  // Debug logging in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("[useMappedUser] Query state:", {
-      userId,
-      isLoading: query.isLoading,
-      isError: query.isError,
-      hasData: !!query.data,
-      data: query.data,
-      error: query.error,
-    });
-  }
-
   const mappedUser = useMappedUserDetail(query.data?.data || null);
 
   // Extract ETag from updated_at field in response data
@@ -250,12 +238,6 @@ export function useMappedUser(userId: string | null) {
     // Extract ETag from updated_at field (converts ISO 8601 to ETag format)
     return extractETagFromUpdatedAt(query.data.data);
   }, [query.data?.data]);
-
-  // Debug logging in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("[useMappedUser] Mapped user:", mappedUser);
-    console.log("[useMappedUser] ETag:", etag);
-  }
 
   return {
     user: mappedUser,

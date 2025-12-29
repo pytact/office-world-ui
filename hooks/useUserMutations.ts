@@ -47,16 +47,10 @@ export function useUserMutations(): UseUserMutationsReturn {
 
   const inviteUser = useCallback(
     async (payload: UserInviteCreate) => {
-      console.log("[useUserMutations] inviteUser called with payload:", payload);
-      console.log("[useUserMutations] createMutation:", createMutation);
-      console.log("[useUserMutations] isInviting:", createMutation.isPending);
-      
       try {
         const result = await createMutation.mutateAsync(payload);
-        console.log("[useUserMutations] Mutation successful, result:", result);
         return result;
       } catch (error) {
-        console.error("[useUserMutations] Mutation error:", error);
         throw error;
       }
     },

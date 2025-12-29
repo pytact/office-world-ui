@@ -33,8 +33,31 @@ export const ProfileView = React.memo(function ProfileView({
 
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty, defaultValues },
+    watch,
   } = form;
+
+  // Watch form values to check if they've changed
+  const firstName = watch("first_name");
+  const lastName = watch("last_name");
+
+  // Check if form has been modified and values are different from defaults
+  // Button should be enabled only if user has typed something different from initial values
+  const hasChanges = useMemo(() => {
+    if (!isDirty) return false;
+    
+    // Compare current values with default values
+    const currentFirstName = firstName ?? null;
+    const currentLastName = lastName ?? null;
+    const defaultFirstName = defaultValues?.first_name ?? null;
+    const defaultLastName = defaultValues?.last_name ?? null;
+
+    // Check if any field has actually changed
+    const firstNameChanged = currentFirstName !== defaultFirstName;
+    const lastNameChanged = currentLastName !== defaultLastName;
+
+    return firstNameChanged || lastNameChanged;
+  }, [isDirty, firstName, lastName, defaultValues]);
 
   // PHASE-UX-1: Visual Dominance - Container with clear hierarchy
   const containerStyle = useMemo(
@@ -231,7 +254,11 @@ export const ProfileView = React.memo(function ProfileView({
           </div>
 
           <div style={buttonContainerStyle}>
-            <Button type="submit" isLoading={isLoading} disabled={!isValid}>
+            <Button 
+              type="submit" 
+              isLoading={isLoading} 
+              disabled={!hasChanges || !isValid}
+            >
               Update Profile
             </Button>
             <Button type="button" onClick={onCancel} variant="secondary">

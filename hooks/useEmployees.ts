@@ -31,6 +31,7 @@ export function useListEmployees(params?: EmployeeListParams) {
       params?.search,
       params?.department,
       params?.employment_status,
+      params?.role_code,
       params?.sort_by,
       params?.sort_order,
     ],
@@ -54,16 +55,7 @@ export function useGetEmployee(employee_id: string | null) {
     queryKey: ["employee", employee_id],
     queryFn: () => {
       if (!employee_id) {
-        const error = new Error("Employee ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetEmployee] Employee ID is missing");
-        }
-        throw error;
-      }
-
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[useGetEmployee] Fetching employee:", employee_id);
+        throw new Error("Employee ID is required");
       }
 
       return EmployeeService.getById(employee_id);

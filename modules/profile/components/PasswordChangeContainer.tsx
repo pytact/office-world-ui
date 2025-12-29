@@ -7,7 +7,7 @@ import React, { useCallback, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context";
 import { useUpdateUser } from "@/hooks/useUsers";
-import { useGetUser } from "@/hooks/useUsers";
+import { useGetMe } from "@/hooks/useAuth";
 import { extractETagFromUpdatedAt } from "@/utils/helpers/etag";
 import { PasswordChange } from "./PasswordChange";
 import { useToast } from "@/context/ToastContext";
@@ -18,13 +18,18 @@ export function PasswordChangeContainer() {
   const { showSuccess, showError } = useToast();
   const updateUserMutation = useUpdateUser();
 
-  // Get user data to extract ETag
-  const { data: userData } = useGetUser(authUser?.user_id || null);
+  // Get current user data to extract ETag and user_id
+  const { data: userData } = useGetMe();
+
+  // Extract user_id from /auth/me response
+  const userId = useMemo(() => {
+    return userData?.data?.user?.user_id || authUser?.user_id || "";
+  }, [userData?.data?.user?.user_id, authUser?.user_id]);
 
   const etag = useMemo(() => {
-    if (!userData?.data) return null;
-    return extractETagFromUpdatedAt(userData.data);
-  }, [userData?.data]);
+    if (!userData?.data?.user) return null;
+    return extractETagFromUpdatedAt(userData.data.user);
+  }, [userData?.data?.user]);
 
   const [error, setError] = useState<string | undefined>();
 
@@ -36,7 +41,7 @@ export function PasswordChangeContainer() {
     async (currentPassword: string, newPassword: string) => {
       setError(undefined);
 
-      if (!authUser?.user_id) {
+      if (!userId) {
         setError("User ID not found");
         return;
       }
@@ -53,8 +58,9 @@ export function PasswordChangeContainer() {
 
       try {
         // Update password using PATCH /v1/users/{user_id}
+        // Use user_id from /auth/me response
         await updateUserMutation.mutateAsync({
-          user_id: authUser.user_id,
+          user_id: userId,
           payload: {
             current_password: currentPassword,
             new_password: newPassword,
@@ -70,7 +76,7 @@ export function PasswordChangeContainer() {
         showError(errorMessage);
       }
     },
-    [authUser, etag, updateUserMutation, router, showSuccess, showError]
+    [userId, etag, updateUserMutation, router, showSuccess, showError]
   );
 
   return (

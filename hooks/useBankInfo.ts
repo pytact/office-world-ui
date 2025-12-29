@@ -27,11 +27,7 @@ export function useGetBankInfo(employee_id: string | null) {
     queryKey: ["bankInfo", employee_id],
     queryFn: async () => {
       if (!employee_id) {
-        const error = new Error("Employee ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetBankInfo] Employee ID is missing");
-        }
-        throw error;
+        throw new Error("Employee ID is required");
       }
       
       try {

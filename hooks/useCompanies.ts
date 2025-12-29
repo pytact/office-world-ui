@@ -55,16 +55,7 @@ export function useGetCompany(company_id: string | null) {
     queryKey: ["company", company_id],
     queryFn: () => {
       if (!company_id) {
-        const error = new Error("Company ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetCompany] Company ID is missing");
-        }
-        throw error;
-      }
-
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[useGetCompany] Fetching company:", company_id);
+        throw new Error("Company ID is required");
       }
 
       return CompanyService.getById(company_id);

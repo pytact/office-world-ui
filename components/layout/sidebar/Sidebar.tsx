@@ -16,6 +16,7 @@ import { salaryRoutes } from "@/utils/routes/salary.routes";
 import { notificationRoutes } from "@/utils/routes/notification.routes";
 import { projectRoutes } from "@/utils/routes/project.routes";
 import { taskRoutes } from "@/utils/routes/task.routes";
+import { leaveRoutes } from "@/utils/routes/leave.routes";
 
 interface NavItem {
   label: string;
@@ -56,6 +57,18 @@ export function Sidebar() {
       items.push(
         { label: "Tasks", href: taskRoutes.company.list, roles: ["ceo", "hr", "manager", "employee"] }
       );
+
+      // All company users can see Leaves (visibility differs by role)
+      items.push(
+        { label: "Leaves", href: leaveRoutes.company.list, roles: ["ceo", "hr", "manager", "employee"] }
+      );
+
+      // Approvers can see Pending Approvals (quick access to approval queue)
+      if (["ceo", "hr", "manager"].includes(userRole)) {
+        items.push(
+          { label: "Pending Approvals", href: leaveRoutes.company.approvals, roles: ["ceo", "hr", "manager"] }
+        );
+      }
 
       // CEO and HR can see all company features
       // Show "Employees" (not "Users")

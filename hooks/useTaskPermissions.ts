@@ -25,6 +25,13 @@ interface UseTaskPermissionsReturn {
 /**
  * Hook for checking task-related permissions based on user role and task data
  * Encapsulates permission logic following F-008 feature spec
+ * 
+ * Note: Status change permissions:
+ * - Owner: Can always change status
+ * - Editor (assigned with EDITOR permission): Can change status
+ * - Viewer: Cannot change status
+ * - CEO/Manager: Can change status only for tasks they own
+ * 
  * @param params - User role and task information
  * @returns Permission flags for task operations
  */
@@ -39,7 +46,9 @@ export function useTaskPermissions(
       return {
         canCreateTask: true,
         canUpdateTask: true,
-        canChangeStatus: task?.is_owner === true || false, // Only if owner (per domain model)
+        // Can change status if owner OR if backend indicates they can (via can_change_status field)
+        // Backend will return can_change_status=true for owners and EDITOR assigned employees
+        canChangeStatus: task?.can_change_status === true || task?.is_owner === true || false,
         canManageAssignments: true, // Can manage assignments for any task
         canDeleteTask: true, // Can delete any company task
         canViewAllTasks: true,

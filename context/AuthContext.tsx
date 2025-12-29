@@ -86,37 +86,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         const response: LoginResponse = await loginMutation.mutateAsync(payload);
         
-        // Debug logging in development
-        if (process.env.NODE_ENV === "development") {
-          console.log("[AuthContext] Login response:", response);
-        }
-        
         // Verify response structure matches API spec
         if (!response?.data) {
-          console.error("[AuthContext] Invalid response structure:", response);
           throw new Error("Invalid response format: missing data field");
         }
         
         if (!response.data.access_token) {
-          console.error("[AuthContext] Missing access_token:", response.data);
           throw new Error("Invalid response format: missing access_token");
         }
         
         if (!response.data.user) {
-          console.error("[AuthContext] Missing user:", response.data);
           throw new Error("Invalid response format: missing user field");
         }
 
         const newToken = response.data.access_token;
         const newUser = response.data.user;
-
-        // Debug logging
-        if (process.env.NODE_ENV === "development") {
-          console.log("[AuthContext] Setting auth state:", {
-            hasToken: !!newToken,
-            user: newUser,
-          });
-        }
 
         setToken(newToken);
         setUser(newUser);
@@ -126,10 +110,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           sessionStorage.setItem("auth_user", JSON.stringify(newUser));
         }
       } catch (error) {
-        // Enhanced error logging
-        if (process.env.NODE_ENV === "development") {
-          console.error("[AuthContext] Login error:", error);
-        }
         // Re-throw normalized error for proper handling in LoginForm
         throw error;
       }

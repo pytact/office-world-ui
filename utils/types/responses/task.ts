@@ -38,7 +38,7 @@ export interface TaskSummary {
   is_owner: boolean; // Derived: true if authenticated user is task owner
   user_permission: "OWNER" | "EDITOR" | "VIEWER"; // Derived: user's permission level
   can_edit_task: boolean; // Derived: true if owner or editor
-  can_change_status: boolean; // Derived: true if owner only
+  can_change_status: boolean; // Derived: true if owner or editor (assigned with EDITOR permission)
   created_at: string; // ISO 8601 datetime format (UTC, Z suffix)
   updated_at: string; // ISO 8601 datetime format (UTC, Z suffix)
 }
@@ -68,7 +68,7 @@ export interface TaskDetail {
   is_owner?: boolean; // Derived: true if authenticated user is task owner (only in GET detail)
   user_permission?: "OWNER" | "EDITOR" | "VIEWER"; // Derived: user's permission level (only in GET detail)
   can_edit_task?: boolean; // Derived: true if owner or editor (only in GET detail)
-  can_change_status?: boolean; // Derived: true if owner only (only in GET detail)
+  can_change_status?: boolean; // Derived: true if owner or editor (assigned with EDITOR permission) (only in GET detail)
   can_manage_assignments?: boolean; // Derived: true if owner only (only in GET detail)
   is_task_read_only?: boolean; // Derived: true if task is in terminal state or user is VIEWER (only in GET detail)
 }

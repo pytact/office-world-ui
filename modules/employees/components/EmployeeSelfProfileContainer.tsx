@@ -33,8 +33,10 @@ export function EmployeeSelfProfileContainer() {
   // Fetch employee list and find the one matching current user's user_id
   // Note: This is a workaround since there's no direct endpoint to get employee by user_id
   // In production, this should be optimized with a dedicated endpoint
+  // Note: Using default page_size: 20. If employee is not in first page, this will fail.
+  // TODO: Implement proper endpoint or pagination to find employee across all pages
   const { data, isLoading, isError, error, refetch } = useListEmployees({
-    page_size: 1000, // Get all employees to find the matching one
+    page_size: 20, // Default page size (may need pagination if employee not in first page)
   });
 
   // Find employee matching current user's user_id

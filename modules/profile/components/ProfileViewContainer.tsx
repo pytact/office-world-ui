@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context";
 import { useUserUpdateForm } from "@/modules/users/forms/useUserUpdateForm";
 import { useUserUpdateFormSubmit } from "@/modules/users/forms/useUserUpdateFormSubmit";
-import { useGetUser } from "@/hooks/useUsers";
+import { useGetMe } from "@/hooks/useAuth";
 import { extractETagFromUpdatedAt } from "@/utils/helpers/etag";
 import { Loader, ErrorState } from "@/components/ui";
 import { ProfileView } from "./ProfileView";
@@ -20,35 +20,38 @@ export function ProfileViewContainer() {
   const { user: authUser, updateUser } = useAuthContext();
   const { showSuccess, showError } = useToast();
 
-  const { data: userData, isLoading, error, refetch } = useGetUser(
-    authUser?.user_id || null
-  );
+  const { data: userData, isLoading, error, refetch } = useGetMe();
 
   const form = useUserUpdateForm();
+
+  // Extract user_id from /auth/me response
+  const userId = useMemo(() => {
+    return userData?.data?.user?.user_id || authUser?.user_id || "";
+  }, [userData?.data?.user?.user_id, authUser?.user_id]);
 
   // Reset form when user data loads
   // Preserve actual values from API response
   useEffect(() => {
-    if (userData?.data) {
+    if (userData?.data?.user) {
       // Use actual values from API - don't convert to null if they exist
-      const firstName = userData.data.first_name ?? null;
-      const lastName = userData.data.last_name ?? null;
+      const firstName = userData.data.user.first_name ?? null;
+      const lastName = userData.data.user.last_name ?? null;
       
       form.reset({
         first_name: firstName,
         last_name: lastName,
       });
     }
-  }, [userData?.data, form]);
+  }, [userData?.data?.user, form]);
 
   const etag = useMemo(() => {
-    if (!userData?.data) return null;
-    return extractETagFromUpdatedAt(userData.data);
-  }, [userData?.data]);
+    if (!userData?.data?.user) return null;
+    return extractETagFromUpdatedAt(userData.data.user);
+  }, [userData?.data?.user]);
 
   const { submit, isLoading: isSubmitting } = useUserUpdateFormSubmit(
     form,
-    authUser?.user_id || "",
+    userId,
     etag
   );
 
@@ -88,14 +91,18 @@ export function ProfileViewContainer() {
         onRetry={() => refetch()}
       />
     );
-  if (!authUser || !userData?.data) {
+  if (!authUser || !userData?.data?.user) {
     return <ErrorState message="User not found" />;
   }
 
+  // Get email and role from /auth/me response or fallback to authUser
+  const userEmail = userData.data.user.email || authUser.email;
+  const userRole = userData.data.context?.role?.code || authUser.role;
+
   return (
     <ProfileView
-      email={authUser.email}
-      role={authUser.role}
+      email={userEmail}
+      role={userRole}
       form={form}
       onSubmit={form.handleSubmit(handleSubmit)}
       onCancel={handleCancel}

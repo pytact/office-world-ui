@@ -41,9 +41,6 @@ export function convertUpdatedAtToETag(updatedAt: string | null | undefined): st
 
     return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("[convertUpdatedAtToETag] Error converting timestamp:", error);
-    }
     return null;
   }
 }

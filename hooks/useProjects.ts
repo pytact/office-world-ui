@@ -54,16 +54,7 @@ export function useGetProject(project_id: string | null) {
     queryKey: ["project", project_id],
     queryFn: () => {
       if (!project_id) {
-        const error = new Error("Project ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetProject] Project ID is missing");
-        }
-        throw error;
-      }
-
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[useGetProject] Fetching project:", project_id);
+        throw new Error("Project ID is required");
       }
 
       return ProjectService.getById(project_id);

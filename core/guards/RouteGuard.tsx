@@ -47,26 +47,10 @@ export function RouteGuard({
       const isSuperAdminRoute = allowedRoles.includes("superadmin");
       const hasSuperAdminAccess = isSuperAdminRoute && (user.is_super_admin === true || userRole === "superadmin");
       
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[RouteGuard] Role check:", {
-          userRole,
-          originalRole: user.role,
-          allowedRoles,
-          isSuperAdminRoute,
-          is_super_admin: user.is_super_admin,
-          hasSuperAdminAccess,
-          matches: hasSuperAdminAccess || allowedRoles.includes(userRole),
-        });
-      }
-      
       // Check access: either role matches OR (superadmin route AND is_super_admin flag is true)
       const hasAccess = hasSuperAdminAccess || allowedRoles.includes(userRole);
       
       if (!hasAccess) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[RouteGuard] Access denied - redirecting to /403");
-        }
         router.push("/403");
         return;
       }
@@ -94,19 +78,6 @@ export function RouteGuard({
     // For superadmin routes, also check is_super_admin flag
     const isSuperAdminRoute = allowedRoles.includes("superadmin");
     const hasSuperAdminAccess = isSuperAdminRoute && (user.is_super_admin === true || userRole === "superadmin");
-    
-    // Debug logging in development
-    if (process.env.NODE_ENV === "development") {
-      console.log("[RouteGuard] Render check:", {
-        userRole,
-        originalRole: user.role,
-        allowedRoles,
-        isSuperAdminRoute,
-        is_super_admin: user.is_super_admin,
-        hasSuperAdminAccess,
-        matches: hasSuperAdminAccess || allowedRoles.includes(userRole),
-      });
-    }
     
     // Check access: either role matches OR (superadmin route AND is_super_admin flag is true)
     const hasAccess = hasSuperAdminAccess || allowedRoles.includes(userRole);

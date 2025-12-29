@@ -82,15 +82,6 @@ export function LoginForm() {
     try {
       await login(formData);
     } catch (error: any) {
-      // Enhanced error logging
-      console.error("[LoginForm] Login error:", {
-        error,
-        errorType: error?.constructor?.name,
-        errorMessage: error?.message,
-        errorResponse: error?.response,
-        errorData: error?.response?.data,
-        normalizedError: error,
-      });
 
       const newErrors: typeof errors = {};
 
@@ -184,7 +175,6 @@ export function LoginForm() {
         newErrors.general = error?.message || "Login failed. Please check your credentials and try again.";
       }
 
-      console.log("[LoginForm] Final errors to display:", newErrors);
       setErrors(newErrors);
 
       // Show error in toast notification

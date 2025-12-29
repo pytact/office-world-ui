@@ -77,9 +77,7 @@ export function CompanyDetailPlatformContainer() {
       setPendingAction(null);
       refetch();
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Failed to update company status:", error);
-      }
+      // Error handling is done by the mutation hook
     }
   }, [company, pendingAction, updateMutation, refetch, etag]);
 
@@ -94,9 +92,7 @@ export function CompanyDetailPlatformContainer() {
       setShowDeleteModal(false);
       router.push(companyRoutes.platform.list);
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Failed to delete company:", error);
-      }
+      // Error handling is done by the mutation hook
     }
   }, [company, deleteMutation, router, etag]);
 
@@ -112,9 +108,7 @@ export function CompanyDetailPlatformContainer() {
       setShowSoftDeleteModal(false);
       refetch();
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Failed to soft delete company:", error);
-      }
+      // Error handling is done by the mutation hook
     }
   }, [company, updateMutation, refetch, etag]);
 
@@ -130,9 +124,7 @@ export function CompanyDetailPlatformContainer() {
       setShowRestoreModal(false);
       refetch();
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Failed to restore company:", error);
-      }
+      // Error handling is done by the mutation hook
     }
   }, [company, updateMutation, refetch, etag]);
 

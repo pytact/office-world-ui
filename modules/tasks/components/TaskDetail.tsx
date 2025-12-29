@@ -98,7 +98,7 @@ export const TaskDetail = React.memo(function TaskDetail({
       {/* Task Header - Primary (R17: Attention Anchor) */}
       <TaskHeader task={task} />
 
-      {/* Status Control - Secondary (if owner) */}
+      {/* Status Control - Secondary (if owner or editor) */}
       {canChangeStatus && (
         <TaskStatusControl
           currentStatus={task.status}

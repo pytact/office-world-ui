@@ -182,7 +182,6 @@ export const UserInvite = React.memo(function UserInvite({
 
       <Card variant="elevated" padding="lg">
         <form onSubmit={(e) => {
-          console.log("[UserInvite] Form onSubmit called", { e, onSubmit, eventType: e.type });
           // form.handleSubmit already handles preventDefault, so just call it
           onSubmit(e);
         }}>
@@ -279,13 +278,6 @@ export const UserInvite = React.memo(function UserInvite({
                 disabled={isLoading}
                 size="lg"
                 onClick={(e) => {
-                  console.log("[UserInvite] Button clicked", { 
-                    isLoading, 
-                    disabled: isLoading,
-                    formValid: form.formState.isValid,
-                    errors: form.formState.errors,
-                    values: form.getValues()
-                  });
                   // Don't prevent default - let form handle it
                 }}
               >

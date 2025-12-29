@@ -72,20 +72,16 @@ export function UserInviteContainer() {
   // form.handleSubmit returns a function that handles validation and calls our submit
   const handleFormSubmit = useMemo(
     () => {
-      console.log("[UserInviteContainer] Creating handleFormSubmit");
       return form.handleSubmit(
         async (values) => {
-          console.log("[UserInviteContainer] Form validation passed, values:", values);
           try {
             await submit(values);
-            console.log("[UserInviteContainer] Submit completed successfully");
           } catch (error) {
-            console.error("[UserInviteContainer] Submit error:", error);
             throw error;
           }
         },
         (errors) => {
-          console.error("[UserInviteContainer] Form validation failed:", errors);
+          // Form validation failed - errors are handled by React Hook Form
         }
       );
     },
@@ -113,11 +109,6 @@ export function UserInviteContainer() {
     );
   }
 
-  console.log("[UserInviteContainer] Rendering UserInvite", { 
-    handleFormSubmit: typeof handleFormSubmit,
-    isLoading,
-    roleOptionsCount: roleOptions.length 
-  });
 
   return (
     <UserInvite

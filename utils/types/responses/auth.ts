@@ -102,3 +102,42 @@ export interface SubmitPasswordResetResponse {
   message: string;
 }
 
+/**
+ * GET /api/v1/auth/me
+ * Response data structure for current authenticated user
+ */
+export interface MeUserData {
+  user_id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  is_active: boolean;
+  employee_id?: string | null; // Employee ID for company-scoped users (null for SuperAdmin)
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MeResponseData {
+  user: MeUserData;
+  permissions: {
+    [resource: string]: string[];
+  };
+  context: {
+    role: {
+      code: string;
+      name: string;
+    };
+    company_id: string | null;
+    company: {
+      slug: string;
+    } | null;
+    is_super_admin: boolean;
+    is_company_active: boolean | null;
+  };
+}
+
+export interface MeResponse {
+  data: MeResponseData;
+  message: string;
+}
+

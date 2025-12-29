@@ -48,9 +48,6 @@ export function CompanyCreateContainer() {
         router.push(companyRoutes.platform.detail(response.data.company_id));
       } catch (error) {
         // Error handling is done by the mutation hook
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to create company:", error);
-        }
       }
     },
     [form, createMutation, router]

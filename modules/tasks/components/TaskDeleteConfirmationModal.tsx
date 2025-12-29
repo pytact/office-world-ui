@@ -80,7 +80,7 @@ export const TaskDeleteConfirmationModal = React.memo(function TaskDeleteConfirm
           Are you sure you want to delete <strong>"{taskName}"</strong>? This action cannot be undone.
         </p>
         <p style={warningStyle}>
-          ⚠️ This will permanently remove the task and all associated data.
+           This will permanently remove the task and all associated data.
         </p>
         <div style={buttonGroupStyle}>
           <Button

@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/context";
 import { useUserUpdateForm } from "@/modules/users/forms/useUserUpdateForm";
 import { useUserUpdateFormSubmit } from "@/modules/users/forms/useUserUpdateFormSubmit";
-import { useGetUser } from "@/hooks/useUsers";
-import { extractETag } from "@/utils/helpers/etag";
+import { useGetMe } from "@/hooks/useAuth";
+import { extractETagFromUpdatedAt } from "@/utils/helpers/etag";
 import { Loader, ErrorState } from "@/components/ui";
 import { ProfileEdit } from "./ProfileEdit";
 import { useToast } from "@/context/ToastContext";
@@ -19,16 +19,19 @@ export function ProfileEditContainer() {
   const { user: authUser, updateUser } = useAuthContext();
   const { showSuccess, showError } = useToast();
 
-  const { data: userData, isLoading, error, refetch } = useGetUser(
-    authUser?.user_id || null
-  );
+  const { data: userData, isLoading, error, refetch } = useGetMe();
+
+  // Extract user_id from /auth/me response
+  const userId = useMemo(() => {
+    return userData?.data?.user?.user_id || authUser?.user_id || "";
+  }, [userData?.data?.user?.user_id, authUser?.user_id]);
 
   const formDefaultValues = useMemo(
     () => ({
-      first_name: userData?.data?.first_name || null,
-      last_name: userData?.data?.last_name || null,
+      first_name: userData?.data?.user?.first_name || null,
+      last_name: userData?.data?.user?.last_name || null,
     } as const),
-    [userData?.data?.first_name, userData?.data?.last_name]
+    [userData?.data?.user?.first_name, userData?.data?.user?.last_name]
   );
 
   const form = useUserUpdateForm({
@@ -36,14 +39,14 @@ export function ProfileEditContainer() {
   });
 
   const etag = useMemo(() => {
-    if (!userData?.data) return null;
-    // Extract ETag from response headers (attached as _headers by HTTP client)
-    return extractETag(userData.data);
-  }, [userData?.data]);
+    if (!userData?.data?.user) return null;
+    // Extract ETag from updated_at field
+    return extractETagFromUpdatedAt(userData.data.user);
+  }, [userData?.data?.user]);
 
   const { submit, isLoading: isSubmitting } = useUserUpdateFormSubmit(
     form,
-    authUser?.user_id || "",
+    userId,
     etag
   );
 
@@ -88,13 +91,16 @@ export function ProfileEditContainer() {
         onRetry={() => refetch()}
       />
     );
-  if (!authUser || !userData?.data) {
+  if (!authUser || !userData?.data?.user) {
     return <ErrorState message="User not found" />;
   }
 
+  // Get email from /auth/me response or fallback to authUser
+  const userEmail = userData.data.user.email || authUser.email;
+
   return (
     <ProfileEdit
-      email={authUser.email}
+      email={userEmail}
       form={form}
       onSubmit={form.handleSubmit(handleSubmit)}
       onCancel={handleCancel}

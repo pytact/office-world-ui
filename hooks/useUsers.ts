@@ -106,16 +106,7 @@ export function useGetUser(user_id: string | null) {
     queryKey: ["user", user_id],
     queryFn: () => {
       if (!user_id) {
-        const error = new Error("User ID is required");
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useGetUser] User ID is missing");
-        }
-        throw error;
-      }
-      
-      // Debug logging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("[useGetUser] Fetching user:", user_id);
+        throw new Error("User ID is required");
       }
       
       return UserService.getById(user_id);
@@ -167,6 +158,8 @@ export function useUpdateUser() {
       await queryClient.invalidateQueries({ queryKey: ["users", "company"] });
       // Invalidate specific user
       await queryClient.invalidateQueries({ queryKey: ["user", variables.user_id] });
+      // Invalidate /auth/me query (used for profile views)
+      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
 }

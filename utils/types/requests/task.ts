@@ -61,7 +61,7 @@ export interface TaskCreate extends TaskBase {
  * Note: Partial update supported (only provided fields are updated)
  * Authorization: Field-specific permissions:
  * - Name/Description: Owner, Editor, CEO, Manager
- * - Status: Owner only
+ * - Status: Owner or Editor (assigned with EDITOR permission)
  * - Assignments: Owner, CEO, Manager
  */
 export interface TaskUpdate {

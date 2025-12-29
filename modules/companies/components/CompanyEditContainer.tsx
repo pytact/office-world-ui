@@ -97,9 +97,6 @@ export function CompanyEditContainer() {
         router.push(companyRoutes.platform.detail(company.company_id));
       } catch (error: any) {
         showError(error?.message || "Failed to update company");
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to update company:", error);
-        }
       }
     },
     [form, company, updateMutation, router, etag, showSuccess, showError]

@@ -68,9 +68,7 @@ export function CompanyProfileContainer() {
         });
         profileQuery.refetch();
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to update company profile:", error);
-        }
+        // Error handling is done by the mutation hook
       }
     },
     [form, updateMutation, profileQuery, etag]

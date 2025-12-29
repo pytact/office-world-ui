@@ -97,7 +97,7 @@ export const TaskService = {
    * Consolidated update task details (name, description, status, assignments)
    * Field-specific authorization:
    * - Name/Description: Owner, Editor, CEO, Manager
-   * - Status: Owner only
+   * - Status: Owner or Editor (assigned with EDITOR permission)
    * - Assignments: Owner, CEO, Manager
    * Requires If-Match header (ETag) for concurrency control
    */

@@ -42,7 +42,7 @@ export const TaskAssignmentModal = React.memo(function TaskAssignmentModal({
 
   // Fetch list of employees for selection
   const employeesQuery = useListEmployees({
-    page_size: 100, // Get enough employees for selection
+    page_size: 20, // Default page size
   });
 
   // Reset state when modal closes

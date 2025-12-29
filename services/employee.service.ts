@@ -44,6 +44,9 @@ export const EmployeeService = {
       if (params?.employment_status) {
         searchParams.append("employment_status", params.employment_status);
       }
+      if (params?.role_code) {
+        searchParams.append("role_code", params.role_code);
+      }
       if (params?.sort_by) {
         searchParams.append("sort_by", params.sort_by);
       }

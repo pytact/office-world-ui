@@ -1,6 +1,6 @@
 // Task Status Control Component
 // Feature-specific component - R16 Layer 2
-// Status change control for task detail (owner only)
+// Status change control for task detail (owner or editor with EDITOR permission)
 
 "use client";
 
@@ -21,7 +21,8 @@ interface TaskStatusControlProps {
 /**
  * Task Status Control Component
  * Status change control for task detail
- * Following R17: Primary action for owners
+ * Available to task owners and assigned employees with EDITOR permission
+ * Following R17: Primary action for owners and editors
  */
 export const TaskStatusControl = React.memo(function TaskStatusControl({
   currentStatus,

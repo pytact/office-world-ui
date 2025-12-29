@@ -6,14 +6,7 @@ import { createHttpClient } from "./httpClient";
 // Remove trailing slash to avoid double slashes in URLs
 const API_BASE_URL = (process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/$/, "");
 
-if (!API_BASE_URL) {
-  console.warn("NEXT_PUBLIC_BASE_URL is not set in environment variables");
-} else {
-  // Log in development to help debug
-  if (process.env.NODE_ENV === "development") {
-    console.log("API Base URL:", API_BASE_URL);
-  }
-}
+// API Base URL validation is handled by the HTTP client
 
 export const http = createHttpClient(API_BASE_URL);
 
