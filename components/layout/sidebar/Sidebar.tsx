@@ -17,6 +17,7 @@ import { notificationRoutes } from "@/utils/routes/notification.routes";
 import { projectRoutes } from "@/utils/routes/project.routes";
 import { taskRoutes } from "@/utils/routes/task.routes";
 import { leaveRoutes } from "@/utils/routes/leave.routes";
+import { attendanceRoutes } from "@/utils/routes/attendance.routes";
 
 interface NavItem {
   label: string;
@@ -62,6 +63,18 @@ export function Sidebar() {
       items.push(
         { label: "Leaves", href: leaveRoutes.company.list, roles: ["ceo", "hr", "manager", "employee"] }
       );
+
+      // All company users can see Attendance (own attendance)
+      items.push(
+        { label: "Attendance", href: attendanceRoutes.employee.today, roles: ["ceo", "hr", "manager", "employee"] }
+      );
+
+      // Manager, HR, CEO can see Company Attendance (oversight)
+      if (["ceo", "hr", "manager"].includes(userRole)) {
+        items.push(
+          { label: "Company Attendance", href: attendanceRoutes.company.list, roles: ["ceo", "hr", "manager"] }
+        );
+      }
 
       // Approvers can see Pending Approvals (quick access to approval queue)
       if (["ceo", "hr", "manager"].includes(userRole)) {

@@ -17,6 +17,8 @@ export { TaskProvider, useTaskContext } from "./TaskContext";
 
 export { LeaveProvider, useLeaveContext } from "./LeaveContext";
 
+export { AttendanceProvider, useAttendanceContext } from "./AttendanceContext";
+
 // Re-export useAuth hook for convenience (wraps useAuthContext)
 // Components should use useAuth() instead of useAuthContext() directly
 export { useAuth } from "@/hooks/useAuth";
