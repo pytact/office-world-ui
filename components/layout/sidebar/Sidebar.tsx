@@ -19,6 +19,7 @@ import { taskRoutes } from "@/utils/routes/task.routes";
 import { leaveRoutes } from "@/utils/routes/leave.routes";
 import { attendanceRoutes } from "@/utils/routes/attendance.routes";
 import { auditLogRoutes } from "@/utils/routes/auditLog.routes";
+import { reportRoutes } from "@/utils/routes/report.routes";
 
 interface NavItem {
   label: string;
@@ -77,19 +78,17 @@ export function Sidebar() {
         );
       }
 
-      // Approvers can see Pending Approvals (quick access to approval queue)
-      if (["ceo", "hr", "manager"].includes(userRole)) {
-        items.push(
-          { label: "Pending Approvals", href: leaveRoutes.company.approvals, roles: ["ceo", "hr", "manager"] }
-        );
-      }
-
       // CEO, HR, and Manager can see Audit Logs (with role-based visibility)
       if (["ceo", "hr", "manager"].includes(userRole)) {
         items.push(
           { label: "Audit Logs", href: auditLogRoutes.company.list, roles: ["ceo", "hr", "manager"] }
         );
       }
+
+      // All company users can see Reports (visibility differs by role)
+      items.push(
+        { label: "Reports", href: reportRoutes.company.list, roles: ["ceo", "hr", "manager", "employee"] }
+      );
 
       // CEO and HR can see all company features
       // Show "Employees" (not "Users")

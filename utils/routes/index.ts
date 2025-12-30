@@ -3,6 +3,7 @@
 
 export * from "./user.routes";
 export * from "./permission.routes";
+export * from "./report.routes";
 export * from "./notification.routes";
 export * from "./company.routes";
 export * from "./employee.routes";

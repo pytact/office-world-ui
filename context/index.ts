@@ -21,6 +21,8 @@ export { AttendanceProvider, useAttendanceContext } from "./AttendanceContext";
 
 export { AuditLogProvider, useAuditLogContext } from "./AuditLogContext";
 
+export { ReportProvider, useReportContext } from "./ReportContext";
+
 // Re-export useAuth hook for convenience (wraps useAuthContext)
 // Components should use useAuth() instead of useAuthContext() directly
 export { useAuth } from "@/hooks/useAuth";
